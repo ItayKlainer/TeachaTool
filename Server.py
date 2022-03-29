@@ -62,7 +62,7 @@ class Server:
 
 
 def server_create():
-    address = ("172.20.133.99", 6565)
+    address = ("172.20.132.135", 6565)
     server = Server(address)
     server.bind()
     return server

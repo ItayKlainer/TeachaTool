@@ -38,7 +38,7 @@ class Client:
 
 
 def main():
-    address = ("172.20.133.99", 6565)
+    address = ("172.20.132.135", 6565)
     client = Client(address)
     writing = threading.Thread(target=client.write)
     receiving = threading.Thread(target=client.receive)

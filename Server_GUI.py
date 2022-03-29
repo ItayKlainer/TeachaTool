@@ -51,13 +51,15 @@ def server_log_in():
     server = Server.server_create()
     Server.server_start(server)
     message = StringVar()
-    teacher_message = Entry(options_server, textvariable=message, font=("Arial", 16))
-    teacher_message.place(x=650, y=255, height=30, width=150)
+    teacher_message = Entry(options_server, textvariable=message, font=("Arial", 10))
+    teacher_message.place(x=805, y=600, height=25, width=420)
 
+    photo = PhotoImage(file='Send_message.png')
+    send_message_btn = Button(options_server, image=photo, command=lambda: [Server.Server.write(server,message.get()), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
+    send_message_btn.place(x=775, y=600, height=25, width=25)
 
-    send_message_btn = Button(options_server, text="Send\nmessage", command=lambda: [Server.Server.write(server,message.get()), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
-    send_message_btn.place(x=675, y=450)
-
+    chat = Text(options_server)
+    chat.place(x=775, y=20, height=575, width=450)
     mainloop()
 
 
