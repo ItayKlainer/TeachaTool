@@ -48,20 +48,24 @@ def server_log_in():
     options_server.iconbitmap("Logo.ico")
     options_server.resizable()
 
-    server = Server.server_create()
-    Server.server_start(server)
     message = StringVar()
     teacher_message = Entry(options_server, textvariable=message, font=("Arial", 10))
     teacher_message.place(x=805, y=600, height=25, width=420)
 
-    photo = PhotoImage(file='Send_message.png')
-    send_message_btn = Button(options_server, image=photo, command=lambda: [Server.Server.write(server,message.get()), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
-    send_message_btn.place(x=775, y=600, height=25, width=25)
-
     chat = Text(options_server)
     chat.place(x=775, y=20, height=575, width=450)
+
+    server = Server.server_create()
+    Server.server_start(server, chat)
+
+    photo = PhotoImage(file='Send_message.png')
+    send_message_btn = Button(options_server, image=photo, command=lambda: [Server.Server.write(server,message.get(), chat), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
+    send_message_btn.place(x=775, y=600, height=25, width=25)
+
     mainloop()
 
+def print_message(message, chat):
+    chat.insert('end', message + '\n')
 
 def server_register():
     print("4")

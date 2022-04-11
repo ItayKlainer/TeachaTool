@@ -1,50 +1,55 @@
 import socket
 import threading
+import Client_GUI
 
 
 class Client:
     def __init__(self, address):
-        self.client_name = input("Enter your name: ")  # name will come from connection
+        self.client_name = "student"  # name will come from connection
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect(address)
         self.client.send(self.client_name.encode())
         print("Connected to server")
-        print("Enter 0 to send a private message to your teacher, enter 1 to send it to the whole class")
 
-    def write(self):
-        while True:
-            public_private = input()  # will put a button in the GUI - public or private / 0 for private 1 for public
-            if public_private == '0' or public_private == '1':
-                client_message = input()
-                client_message = public_private + self.client_name + ": " + client_message
+    def write(self, client_message, chat, ispublic):
+        if client_message.strip():
+            if ispublic:
+                client_message = "1" + self.client_name + ": " + client_message
+                #Client_GUI.print_message(client_message[1:], chat)
                 self.client.send(client_message.encode())
             else:
-                print("wrong type, please enter 0 for private and 1 for public")
+                client_message = "0" + self.client_name + "(Private): " + client_message
+                Client_GUI.print_message(client_message[1:], chat)
+                self.client.send(client_message.encode())
 
-    def receive(self):
+    def receive(self, chat):
         while True:
-            message_type = self.client.recv(1024).decode('utf-8')
-            if message_type == "file":  # buffer overflow - add try
-                file_name = self.client.recv(1024).decode()
-                buffer = self.client.recv(1024)
-                new_file = open(file_name, "wb")
-                new_file.write(buffer)
-                print("The file: " + file_name + " has been received from your teacher")
-                new_file.close()
-
+            server_message = self.client.recv(1024).decode('utf-8')
+            if server_message[0] == '1':
+                Client_GUI.print_message(server_message[1:], chat)
             else:
-                server_message = self.client.recv(1024).decode('utf-8')
-                print(server_message)
+                Client_GUI.print_message(server_message[1:] + "(private)", chat)
 
 
-def main():
-    address = ("172.20.132.135", 6565)
+
+
+def client_create():
+    address = ("192.168.1.35", 6565)
     client = Client(address)
-    writing = threading.Thread(target=client.write)
-    receiving = threading.Thread(target=client.receive)
-    writing.start()
+    return client
+
+def client_start(client, chat):
+    receiving = threading.Thread(target=client.receive, args=(chat,))
     receiving.start()
 
 
-if __name__ == '__main__':
-    main()
+
+'''
+if message_type == "file":  # buffer overflow - add try
+    file_name = self.client.recv(1024).decode()
+    buffer = self.client.recv(1024)
+    new_file = open(file_name, "wb")
+    new_file.write(buffer)
+    print("The file: " + file_name + " has been received from your teacher")
+    new_file.close()
+'''
