@@ -41,7 +41,7 @@ def client_GUI():
 
 
 def client_log_in():  #checking with database, if username & password true:
-    options_server = Toplevel()
+    options_server = Tk()
     options_server.title("TeachaTool - Client")
     options_server.geometry("1280x720")
     options_server.iconbitmap("Logo.ico")
