@@ -53,6 +53,7 @@ def client_log_in():  #checking with database, if username & password true:
 
     chat = Text(options_server)
     chat.place(x=775, y=20, height=575, width=450)
+    chat.config(state=DISABLED)
 
     chat_scrollbar = Scrollbar(options_server)
     chat_scrollbar.place(x=1225, y=20, height=575)
