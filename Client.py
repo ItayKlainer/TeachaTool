@@ -1,7 +1,7 @@
 import socket
 import threading
 import Client_GUI
-
+import Configuration
 
 class Client:
     def __init__(self, address):
@@ -15,26 +15,29 @@ class Client:
         if client_message.strip():
             if ispublic:
                 client_message = "1" + self.client_name + ": " + client_message
-                #Client_GUI.print_message(client_message[1:], chat)
                 self.client.send(client_message.encode())
             else:
                 client_message = "0" + self.client_name + "(Private): " + client_message
+                Client_GUI.active_chat(chat)
                 Client_GUI.print_message(client_message[1:], chat)
+                Client_GUI.disable_chat(chat)
                 self.client.send(client_message.encode())
 
     def receive(self, chat):
         while True:
             server_message = self.client.recv(1024).decode('utf-8')
-            if server_message[0] == '1':
+            if server_message[0] == '1': #to check if file or not file
+                Client_GUI.active_chat(chat)
                 Client_GUI.print_message(server_message[1:], chat)
-            else:
-                Client_GUI.print_message(server_message[1:] + "(private)", chat)
+                Client_GUI.disable_chat(chat)
+            elif server_message[0] == '0':
+                print("file")
 
 
 
 
 def client_create():
-    address = ("192.168.1.35", 6565)
+    address = (Configuration.server_ip, Configuration.port)
     client = Client(address)
     return client
 

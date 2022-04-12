@@ -10,7 +10,7 @@ def client_GUI():
     main_client.resizable()
 
     welcome_lbl = Label(main_client, text="Welcome to TeachaTool", font=("Arial", 40, "bold"))
-    welcome_lbl.place(relx=0.5, y=50,anchor=CENTER)
+    welcome_lbl.place(relx=0.5, y=50, anchor=CENTER)
 
     username_lbl = Label(main_client, text="Username:", font=("Arial", 20, "underline"))
     username_lbl.place(x=500, y=250)
@@ -25,10 +25,10 @@ def client_GUI():
 
     password = StringVar()
 
-    password_entry = Entry(main_client, textvariable=password, show='*',font=("Arial", 16))
+    password_entry = Entry(main_client, textvariable=password, show='*', font=("Arial", 16))
     password_entry.place(x=650, y=305, height=30, width=150)
 
-    log_in_btn = Button(main_client, text="Log in", command=lambda:[main_client.destroy(), client_log_in()], font=("Arial", 14, "bold"))
+    log_in_btn = Button(main_client, text="Log in", command=lambda: [main_client.destroy(), client_log_in()], font=("Arial", 14, "bold"))
     log_in_btn.place(x=525, y=450)
 
     register_btn = Button(main_client, text="Register", command=client_register, font=("Arial", 14, "bold"))
@@ -39,9 +39,8 @@ def client_GUI():
 
     mainloop()
 
-def client_log_in():
-    #checking with database
-    #if username & password true:
+
+def client_log_in():  #checking with database, if username & password true:
     options_server = Toplevel()
     options_server.title("TeachaTool - Client")
     options_server.geometry("1280x720")
@@ -54,6 +53,10 @@ def client_log_in():
 
     chat = Text(options_server)
     chat.place(x=775, y=20, height=575, width=450)
+
+    chat_scrollbar = Scrollbar(options_server)
+    chat_scrollbar.place(x=1225, y=20, height=575)
+    chat_scrollbar.config(command=chat.yview)
 
     client = Client.client_create()
     Client.client_start(client, chat)
@@ -68,11 +71,21 @@ def client_log_in():
 
     mainloop()
 
+
 def print_message(message, chat):
     chat.insert('end', message + '\n')
 
+
 def client_register():
     print("4")
+
+
+def active_chat(chat):
+    chat.config(state=NORMAL)
+
+
+def disable_chat(chat):
+    chat.config(state=DISABLED)
 
 
 if __name__ == "__main__":
