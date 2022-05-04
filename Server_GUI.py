@@ -27,7 +27,7 @@ def server_GUI():
     password_entry = Entry(main_server, textvariable=password, show='*', font=("Arial", 16))
     password_entry.place(x=650, y=305, height=30, width=150)
 
-    log_in_btn = Button(main_server, text="Log in", command=lambda: [main_server.destroy(), server_log_in()], font=("Arial", 14, "bold"))
+    log_in_btn = Button(main_server, text="Log in", command=lambda: [server_log_in(main_server)], font=("Arial", 14, "bold"))
     log_in_btn.place(x=525, y=450)
 
     register_btn = Button(main_server, text="Register", command=server_register, font=("Arial", 14, "bold"))
@@ -40,9 +40,10 @@ def server_GUI():
     mainloop()
 
 
-def server_log_in():
+def server_log_in(main_server):
     #checking with database
     #if username & password true:
+    main_server.destroy()
     options_server = Tk()
     options_server.title("TeachaTool - Teacher")
     options_server.geometry("1280x720")
@@ -68,15 +69,26 @@ def server_log_in():
     chat_combobox.place(x=775, y=630)
     chat_combobox.current(0)
 
+    screen_share_combobox = ttk.Combobox(options_server)
+    screen_share_combobox.place(x=475, y=50)
+
     student_list_lbl = Label(options_server, text="Currently online:", font=("Arial", 14, "underline"))
     student_list_lbl.place(x=20, y=10)
 
     server = Server.server_create()
-    Server.server_start(server, chat, student_list, chat_combobox)
+    Server.server_start(server, chat, student_list, chat_combobox, screen_share_combobox)
 
     photo = PhotoImage(file='Send_message.png')
-    send_message_btn = Button(options_server, image=photo, command=lambda: [Server.Server.write(server,message.get(), chat, student_list, chat_combobox), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
+    send_message_btn = Button(options_server, image=photo, command=lambda: [Server.Server.write(server,message.get(), chat, student_list, chat_combobox, screen_share_combobox), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_message_btn.place(x=775, y=600, height=25, width=25)
+
+    screen_share_btn = Button(options_server, text="Watch the screen of", command=lambda: [Server.Server.ask_for_stream(server, check_screen_share_receiver(screen_share_combobox))], font=("Arial", 12, "bold"))
+    screen_share_btn.place(x=300, y=50)
+
+    stop_screen_share_lbl = Label(options_server, text="To close a screen,\npress the window and then press q", justify=LEFT, font=("Arial", 12,))
+    stop_screen_share_lbl.place(x=300, y=90)
+    #stop_screen_share_btn = Button(options_server, text="Stop all screen shares", command=lambda: [Server.Server.stop_all_streams(server)], font=("Arial", 11, "bold"))
+    #stop_screen_share_btn.place(x=300, y=100)
 
     mainloop()
 
@@ -96,12 +108,16 @@ def remove_from_list(student_list, index):
     student_list.delete(index)
 
 
-def update_combobox(chat_combobox, client_lst):
+def update_combobox(chat_combobox, screen_share_combobox, client_lst):
     chat_combobox['values'] = client_lst
+    screen_share_combobox['values'] = client_lst[1:]
 
 
-def check_receiver(chat_combobox):
+def check_chat_receiver(chat_combobox):
     return chat_combobox.get()
+
+def check_screen_share_receiver(screen_share_combobox):
+    return screen_share_combobox.get()
 
 
 def active_chat(chat):

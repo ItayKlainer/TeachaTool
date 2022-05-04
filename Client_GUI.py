@@ -28,7 +28,7 @@ def client_GUI():
     password_entry = Entry(main_client, textvariable=password, show='*', font=("Arial", 16))
     password_entry.place(x=650, y=305, height=30, width=150)
 
-    log_in_btn = Button(main_client, text="Log in", command=lambda: [main_client.destroy(), client_log_in()], font=("Arial", 14, "bold"))
+    log_in_btn = Button(main_client, text="Log in", command=lambda: [client_log_in(main_client)], font=("Arial", 14, "bold"))
     log_in_btn.place(x=525, y=450)
 
     register_btn = Button(main_client, text="Register", command=client_register, font=("Arial", 14, "bold"))
@@ -40,7 +40,8 @@ def client_GUI():
     mainloop()
 
 
-def client_log_in():  #checking with database, if username & password true:
+def client_log_in(main_client):  #checking with database, if username & password true:
+    main_client.destroy()
     options_server = Tk()
     options_server.title("TeachaTool - Client")
     options_server.geometry("1280x720")

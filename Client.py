@@ -2,6 +2,7 @@ import socket
 import threading
 import Client_GUI
 import Configuration
+from vidstream import ScreenShareClient
 
 class Client:
     def __init__(self, address):
@@ -9,6 +10,7 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect(address)
         self.client.send(self.client_name.encode())
+        self.stream_client = ScreenShareClient(Configuration.server_ip, Configuration.stream_port)
         print("Connected to server")
 
     def write(self, client_message, chat, ispublic):
@@ -26,15 +28,15 @@ class Client:
     def receive(self, chat):
         while True:
             server_message = self.client.recv(1024).decode('utf-8')
-            if server_message[0] == '1': #to check if file or not file
+            if server_message[0] == '0':
                 Client_GUI.active_chat(chat)
                 Client_GUI.print_message(server_message[1:], chat)
                 Client_GUI.disable_chat(chat)
-            elif server_message[0] == '0':
+            elif server_message[0] == '1':
                 print("file")
-
-
-
+            elif server_message[0] == '2':
+                self.stream_client = ScreenShareClient(Configuration.server_ip, Configuration.stream_port)
+                self.stream_client.start_stream()
 
 def client_create():
     address = (Configuration.server_ip, Configuration.port)
