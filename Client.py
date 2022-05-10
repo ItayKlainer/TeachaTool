@@ -5,8 +5,8 @@ import Configuration
 from vidstream import ScreenShareClient
 
 class Client:
-    def __init__(self, address):
-        self.client_name = "student"  # name will come from connection
+    def __init__(self, address, username):
+        self.client_name = username
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect(address)
         self.client.send(self.client_name.encode())
@@ -38,9 +38,9 @@ class Client:
                 self.stream_client = ScreenShareClient(Configuration.server_ip, Configuration.stream_port)
                 self.stream_client.start_stream()
 
-def client_create():
+def client_create(username):
     address = (Configuration.server_ip, Configuration.port)
-    client = Client(address)
+    client = Client(address, username)
     return client
 
 def client_start(client, chat):
