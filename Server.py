@@ -4,18 +4,17 @@ import time
 import Server_GUI
 import Configuration
 from vidstream import StreamingServer
-import Client
 
 class Server:
     # Creates a server on the given address
-    def __init__(self, address):
+    def __init__(self, address, username):
         #self.server_name = input("Enter server name: ")  # will come from log in db
-        self.server_name = "teacher"
+        self.server_name = username
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.address = address
         self.name_socket_address_list = []
         self.name_list = ["Everyone"]
-        self.stream_server = StreamingServer(Configuration.server_ip, Configuration.stream_port, slots=1)
+        self.stream_server = StreamingServer(Configuration.server_ip, Configuration.stream_port, slots=1, quit_key=chr(27))
     # Binds the server
     def bind(self):
         self.server.bind(self.address)
@@ -124,10 +123,9 @@ class Server:
             time.sleep(0.5)
 
 
-
-def server_create():
+def server_create(username):
     address = (Configuration.server_ip, Configuration.port)
-    server = Server(address)
+    server = Server(address, username)
     server.bind()
     return server
 
