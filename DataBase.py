@@ -1,5 +1,8 @@
 from pymongo import MongoClient
 import hashlib
+import gridfs
+
+
 cluster = MongoClient("mongodb+srv://ItayKlainer:klainer2104@teachatooldb.nazai.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 teachatooldb = cluster["TeachaTool"]
 teachers_collection = teachatooldb["Teachers"]
@@ -57,3 +60,32 @@ def check_student_register(username, password1, password2):
     else:
         add_student(username, password1)
         return 4
+
+'''
+def upload_file():
+    name = "Image"
+    filelocation = path
+    filedata = open(filelocation, "rb")
+    data = filedata.read()
+    fs = gridfs.GridFS(mongodb)
+    finish = filelocation.split(".")
+    finish = finish[1]
+    fs.put(data, filename=name, ending=finish)
+    print("upload complete")
+
+
+
+
+#Download
+name=input("Enter a name of file: ")
+data=mongodb.fs.files.find_one({"filename":name})
+my_id = data["_id"]
+outputdata= fs.get(my_id).read()
+siyomet=collection.find_one({"_id":my_id})
+finalsiyomet=siyomet["ending"]
+download_location= str("D:\PythonDownloads")
+output = open(download_location+ f"\{name}.{finalsiyomet}", "wb")
+output.write(outputdata)
+output.close()
+print("download complete")
+'''

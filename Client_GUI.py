@@ -111,8 +111,12 @@ def register(username, password1, password2, register_page_client, front_page_cl
 
 
 def log_in(username, password, front_page_client):
+    can_connect = False
     if DataBase.check_student_log_in(username, password):
-        start_main_page(front_page_client, username)
+       if Client.check_server():
+           start_main_page(front_page_client, username)
+       else:
+         messagebox.showerror("ERROR", "Couldn't connect to the teacher")
     else:
         messagebox.showwarning("Invalid Credentials", "Incorrect username or password,\nplease try again")
 
@@ -139,26 +143,24 @@ def start_main_page(front_page_client, username):
     chat_scrollbar.config(command=chat.yview)
 
     client = Client.client_create(username)
-    Client.client_start(client, chat)
+    Client.client_start(client, chat, front_page_client, main_page_client)
 
     public_message_icon = PhotoImage(file='Send_message.png')
-    send_public_message_btn = Button(main_page_client, image=public_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, True), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
+    send_public_message_btn = Button(main_page_client, image=public_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, True, front_page_client, main_page_client), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_public_message_btn.place(x=775, y=600, height=25, width=25)
 
     private_message_icon = PhotoImage(file='Send_private_message.png')
-    send_private_message_btn = Button(main_page_client, image=private_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, False), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
+    send_private_message_btn = Button(main_page_client, image=private_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, False, front_page_client, main_page_client), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_private_message_btn.place(x=775, y=630, height=25, width=25)
+
+    browse_files_btn = Button(main_page_client, text="Browse\nFiles", font=("Arial", 18,))
+    browse_files_btn.place(x=500, y=250, height=150, width=150)
 
     mainloop()
 
 
 def print_message(message, chat):
     chat.insert('end', message + '\n')
-
-
-def client_register():
-    print("4")
-
 
 def active_chat(chat):
     chat.config(state=NORMAL)

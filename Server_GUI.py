@@ -160,19 +160,35 @@ def start_main_page(front_page_server, username):
     send_message_btn = Button(main_page_server, image=photo, command=lambda: [Server.Server.write(server,message.get(), chat, student_list, chat_combobox, screen_share_combobox), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_message_btn.place(x=775, y=600, height=25, width=25)
 
-    screen_share_btn = Button(main_page_server, text="Watch the screen of", command=lambda: [Server.Server.ask_for_stream(server, check_screen_share_receiver(screen_share_combobox))], font=("Arial", 12, "bold"))
+    change_permissions_btn = Button(main_page_server, text="Change\nPermissions", font=("Arial", 18,))
+    change_permissions_btn.place(x=300, y=250, height=150, width=150)
+
+    browse_files_btn = Button(main_page_server, text="Browse\nFiles", font=("Arial", 18,))
+    browse_files_btn.place(x=500, y=250, height=150, width=150)
+
+    screen_share_btn = Button(main_page_server, text="Watch the screen of", command=lambda: [Server.Server.ask_for_stream(server, check_screen_share_receiver(screen_share_combobox), chat)], font=("Arial", 12, "bold"))
     screen_share_btn.place(x=300, y=50)
 
     stop_screen_share_lbl = Label(main_page_server, text="To close a screen,\npress the window and then press ESC", justify=LEFT, font=("Arial", 12,))
     stop_screen_share_lbl.place(x=300, y=90)
-    #stop_screen_share_btn = Button(main_page_server, text="Stop all screen shares", command=lambda: [Server.Server.stop_all_streams(server)], font=("Arial", 11, "bold"))
-    #stop_screen_share_btn.place(x=300, y=100)
 
     mainloop()
 
 
-def print_message(message, chat):
-    chat.insert('end', message + '\n')
+def print_message(message, chat, color):
+    chat.config(state=NORMAL)
+    if color == "red":
+        chat.tag_config('warning_message', foreground=color)
+        chat.insert('end', message + '\n', 'warning_message')
+    elif color == "blue":
+        chat.tag_config('info_message', foreground=color)
+        chat.insert('end', message + '\n', 'info_message')
+    elif color == "green":
+        chat.tag_config('instruction_message', foreground=color)
+        chat.insert('end', message + '\n', 'instruction_message')
+    else:
+        chat.insert('end', message + '\n')
+    chat.config(state=DISABLED)
 
 
 def add_to_list(student_list, name):
@@ -196,12 +212,6 @@ def check_screen_share_receiver(screen_share_combobox):
     return screen_share_combobox.get()
 
 
-def active_chat(chat):
-    chat.config(state=NORMAL)
-
-
-def disable_chat(chat):
-    chat.config(state=DISABLED)
-
 if __name__ == "__main__":
     start_front_page()
+
