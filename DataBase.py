@@ -2,7 +2,6 @@ from pymongo import MongoClient
 import hashlib
 import gridfs
 
-
 cluster = MongoClient("mongodb+srv://ItayKlainer:klainer2104@teachatooldb.nazai.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 teachatooldb = cluster["TeachaTool"]
 teachers_collection = teachatooldb["Teachers"]
@@ -62,13 +61,12 @@ def check_student_register(username, password1, password2):
         return 4
 
 '''
-def upload_file():
+def upload_file(path):
     name = "Image"
-    filelocation = path
-    filedata = open(filelocation, "rb")
+    filedata = open(path, "rb")
     data = filedata.read()
     fs = gridfs.GridFS(mongodb)
-    finish = filelocation.split(".")
+    finish = path.split(".")
     finish = finish[1]
     fs.put(data, filename=name, ending=finish)
     print("upload complete")

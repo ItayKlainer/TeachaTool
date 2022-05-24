@@ -86,6 +86,15 @@ class Server:
             else:
                 Server_GUI.print_message("Please choose a student from the list", chat, "green")
 
+    def send_permissions(self, permissions, chat, student_list, chat_combobox, screen_share_combobox):
+        for i in range(len(self.name_socket_address_list)):
+            try:
+                self.name_socket_address_list[i][1].send(('3' + permissions).encode())
+            except:
+                self.disconnect_client(i, chat, student_list, chat_combobox, screen_share_combobox)
+        else:
+            Server_GUI.print_message("Permissions have been applied", chat, "green")
+
 
 
     def check_connection(self, chat, student_list, chat_combobox, screen_share_combobox):

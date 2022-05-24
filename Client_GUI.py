@@ -156,6 +156,8 @@ def start_main_page(front_page_client, username):
     browse_files_btn = Button(main_page_client, text="Browse\nFiles", font=("Arial", 18,))
     browse_files_btn.place(x=500, y=250, height=150, width=150)
 
+
+
     mainloop()
 
 

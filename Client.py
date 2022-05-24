@@ -4,7 +4,7 @@ import Client_GUI
 import Configuration
 from tkinter import messagebox
 from vidstream import ScreenShareClient
-
+import Registry
 
 class Client:
     def __init__(self, address, username):
@@ -42,12 +42,17 @@ class Client:
                 elif server_message[0] == '2':
                     self.stream_client = ScreenShareClient(Configuration.server_ip, Configuration.stream_port)
                     self.stream_client.start_stream()
+                elif server_message[0] == '3':
+                    server_message = server_message[1:]
+                    for i in range(len(server_message)):
+                        Registry.apply_permission(i, int(server_message[i]))
+
             except:
                 self.disconnect(front_page_client, main_page_client)
                 break
 
     def disconnect(self, front_page_client, main_page_client):
-        #messagebox.showerror("ERROR", "Teacher has disconnected, sending you to the front page")
+        messagebox.showerror("ERROR", "Teacher has disconnected, sending you to the front page")
         main_page_client.withdraw()
         front_page_client.deiconify()
         self.client.close()

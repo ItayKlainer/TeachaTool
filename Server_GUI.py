@@ -160,8 +160,39 @@ def start_main_page(front_page_server, username):
     send_message_btn = Button(main_page_server, image=photo, command=lambda: [Server.Server.write(server,message.get(), chat, student_list, chat_combobox, screen_share_combobox), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_message_btn.place(x=775, y=600, height=25, width=25)
 
-    change_permissions_btn = Button(main_page_server, text="Change\nPermissions", font=("Arial", 18,))
-    change_permissions_btn.place(x=300, y=250, height=150, width=150)
+    usb_state = IntVar()
+    cmd_state = IntVar()
+    download_state = IntVar()
+    internet_state = IntVar()
+    test_state = IntVar()
+
+    usb_checkbtn = Checkbutton(main_page_server, text="USB Input", variable=usb_state, font=("Arial", 12,))
+    usb_checkbtn.select()
+    usb_checkbtn.place(x=300, y=250)
+
+    cmd_checkbtn = Checkbutton(main_page_server, text="Command line", variable=cmd_state, font=("Arial", 12,))
+    cmd_checkbtn.select()
+    cmd_checkbtn.place(x=300, y=275)
+
+    download_checkbtn = Checkbutton(main_page_server, text="Download files", variable=download_state, font=("Arial", 12,))
+    download_checkbtn.select()
+    download_checkbtn.place(x=300, y=300)
+
+    internet_checkbtn = Checkbutton(main_page_server, text="Internet connection", variable=internet_state, font=("Arial", 12,))
+    internet_checkbtn.select()
+    internet_checkbtn.place(x=300, y=325)
+
+    '''
+    test_checkbtn = Checkbutton(main_page_server, text="Block everything\nTEST MODE", variable=test_state, font=("Arial", 12,))
+    test_checkbtn.select()
+    test_checkbtn.place(x=300, y=350)
+    '''
+
+    apply_permissions_btn = Button(main_page_server, text="Change\nPermissions", command=lambda:[Server.Server.send_permissions(server, str(usb_state.get()) + str(cmd_state.get()) + str(download_state.get()) + str(internet_state.get()) + str(internet_state.get()), chat, student_list, chat_combobox, screen_share_combobox)], font=("Arial", 16,))
+    apply_permissions_btn.place(x=300, y=450, height=50, width=150)
+
+    cancel_permissions_btn = Button(main_page_server, text="Cancel All permissions", command=lambda:[Server.Server.send_permissions(server, "11111", chat, student_list, chat_combobox, screen_share_combobox), usb_checkbtn.select(), cmd_checkbtn.select(), download_checkbtn.select(), internet_checkbtn.select()], font=("Arial", 16,))
+    cancel_permissions_btn.place(x=500, y=450, height=50, width=150)
 
     browse_files_btn = Button(main_page_server, text="Browse\nFiles", font=("Arial", 18,))
     browse_files_btn.place(x=500, y=250, height=150, width=150)
