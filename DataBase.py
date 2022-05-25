@@ -1,12 +1,18 @@
 from pymongo import MongoClient
 import hashlib
 import gridfs
+import os
+import Server_GUI
+import Server
+import Configuration
 
 cluster = MongoClient("mongodb+srv://ItayKlainer:klainer2104@teachatooldb.nazai.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 teachatooldb = cluster["TeachaTool"]
 teachers_collection = teachatooldb["Teachers"]
 students_collection = teachatooldb["Students"]
-files_collection = teachatooldb["Files"]
+files_collection = teachatooldb["fs.files"]
+
+gridfs_connection_to_db = gridfs.GridFS(teachatooldb)
 
 def add_teacher(username, password):
     hash_password = hashlib.sha256(bytes(password, 'UTF-8'))
@@ -60,30 +66,41 @@ def check_student_register(username, password1, password2):
         add_student(username, password1)
         return 4
 
-'''
-def upload_file(path):
-    name = "Image"
-    filedata = open(path, "rb")
-    data = filedata.read()
-    fs = gridfs.GridFS(mongodb)
-    finish = path.split(".")
-    finish = finish[1]
-    fs.put(data, filename=name, ending=finish)
-    print("upload complete")
+
+def upload_file(path, username, browse_files_combobox, server, chat, student_list, chat_combobox, screen_share_combobox):
+    try:
+        file = open(path, "rb")
+        file_name = os.path.basename(path)
+        file_data = file.read()
+        gridfs_connection_to_db.put(file_data, file_name=file_name, teacher_name=username)
+    except:
+        Server_GUI.print_message("Error, file hasn't been uploaded", chat, "red")
+    else:
+        Server_GUI.update_files_combobox(browse_files_combobox)
+        Server_GUI.print_message("The file " + file_name + " has been uploaded", chat, "blue")
+        Server.Server.send_files(server, file_name, chat, student_list, chat_combobox, screen_share_combobox)
 
 
+def download_file(file_name, chat):
+    if file_name:
+        try:
+            file_document = teachatooldb.fs.files.find_one({"file_name": file_name})
+            file_id = file_document["_id"]
+            file_data = gridfs_connection_to_db.get(file_id).read()
+            new_file = open(Configuration.folder_to_download_files + file_name, "wb")
+            new_file.write(file_data)
+            new_file.close()
+        except:
+                Server_GUI.print_message("Error, couldn't download file", chat, "red")
+        else:
+                Server_GUI.print_message("File has been downloaded at " + Configuration.folder_to_download_files, chat, "blue")
+    else:
+        Server_GUI.print_message("Please select a file from the list above", chat, "green")
 
 
-#Download
-name=input("Enter a name of file: ")
-data=mongodb.fs.files.find_one({"filename":name})
-my_id = data["_id"]
-outputdata= fs.get(my_id).read()
-siyomet=collection.find_one({"_id":my_id})
-finalsiyomet=siyomet["ending"]
-download_location= str("D:\PythonDownloads")
-output = open(download_location+ f"\{name}.{finalsiyomet}", "wb")
-output.write(outputdata)
-output.close()
-print("download complete")
-'''
+def get_file_names_list():
+    file_names_lst = []
+    files_lst = list(files_collection.find())
+    for file in files_lst:
+        file_names_lst.append(file["file_name"])
+    return file_names_lst

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 import Server
 import DataBase
 
@@ -160,11 +161,14 @@ def start_main_page(front_page_server, username):
     send_message_btn = Button(main_page_server, image=photo, command=lambda: [Server.Server.write(server,message.get(), chat, student_list, chat_combobox, screen_share_combobox), teacher_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_message_btn.place(x=775, y=600, height=25, width=25)
 
+    permission_lbl = Label(main_page_server, text="Permission list:", font=("Arial", 14, "underline"))
+    permission_lbl.place(x=300, y=200)
+
     usb_state = IntVar()
     cmd_state = IntVar()
     download_state = IntVar()
     internet_state = IntVar()
-    test_state = IntVar()
+    #test_state = IntVar()
 
     usb_checkbtn = Checkbutton(main_page_server, text="USB Input", variable=usb_state, font=("Arial", 12,))
     usb_checkbtn.select()
@@ -188,20 +192,31 @@ def start_main_page(front_page_server, username):
     test_checkbtn.place(x=300, y=350)
     '''
 
-    apply_permissions_btn = Button(main_page_server, text="Change\nPermissions", command=lambda:[Server.Server.send_permissions(server, str(usb_state.get()) + str(cmd_state.get()) + str(download_state.get()) + str(internet_state.get()) + str(internet_state.get()), chat, student_list, chat_combobox, screen_share_combobox)], font=("Arial", 16,))
-    apply_permissions_btn.place(x=300, y=450, height=50, width=150)
+    apply_permissions_btn = Button(main_page_server, text="Change\npermissions", command=lambda:[Server.Server.send_permissions(server, str(usb_state.get()) + str(cmd_state.get()) + str(download_state.get()) + str(internet_state.get()) + str(internet_state.get()), chat, student_list, chat_combobox, screen_share_combobox)], font=("Arial", 14,))
+    apply_permissions_btn.place(x=300, y=375, height=50, width=150)
 
-    cancel_permissions_btn = Button(main_page_server, text="Cancel All permissions", command=lambda:[Server.Server.send_permissions(server, "11111", chat, student_list, chat_combobox, screen_share_combobox), usb_checkbtn.select(), cmd_checkbtn.select(), download_checkbtn.select(), internet_checkbtn.select()], font=("Arial", 16,))
-    cancel_permissions_btn.place(x=500, y=450, height=50, width=150)
-
-    browse_files_btn = Button(main_page_server, text="Browse\nFiles", font=("Arial", 18,))
-    browse_files_btn.place(x=500, y=250, height=150, width=150)
+    cancel_permissions_btn = Button(main_page_server, text="Cancel\nall permissions", command=lambda:[Server.Server.send_permissions(server, "11111", chat, student_list, chat_combobox, screen_share_combobox), usb_checkbtn.select(), cmd_checkbtn.select(), download_checkbtn.select(), internet_checkbtn.select()], font=("Arial", 14,))
+    cancel_permissions_btn.place(x=300, y=450, height=50, width=150)
 
     screen_share_btn = Button(main_page_server, text="Watch the screen of", command=lambda: [Server.Server.ask_for_stream(server, check_screen_share_receiver(screen_share_combobox), chat)], font=("Arial", 12, "bold"))
     screen_share_btn.place(x=300, y=50)
 
     stop_screen_share_lbl = Label(main_page_server, text="To close a screen,\npress the window and then press ESC", justify=LEFT, font=("Arial", 12,))
     stop_screen_share_lbl.place(x=300, y=90)
+
+    browse_files_lbl = Label(main_page_server, text="Browse files:", font=("Arial", 14, "underline"))
+    browse_files_lbl.place(x=600, y=200)
+
+    browse_files_combobox = ttk.Combobox(main_page_server)
+    browse_files_combobox.place(x=600, y=250)
+
+    download_file_btn = Button(main_page_server, text="Download file", command=lambda:[DataBase.download_file(browse_files_combobox.get(), chat)], font=("Arial", 14,))
+    download_file_btn.place(x=595, y=450, height=50, width=150)
+
+    upload_file_btn = Button(main_page_server, text="Upload file", command=lambda:[choose_file(username, browse_files_combobox,server, chat, student_list, chat_combobox, screen_share_combobox)], font=("Arial", 14,))
+    upload_file_btn.place(x=1115, y=630)
+
+    update_files_combobox(browse_files_combobox)
 
     mainloop()
 
@@ -241,6 +256,16 @@ def check_chat_receiver(chat_combobox):
 
 def check_screen_share_receiver(screen_share_combobox):
     return screen_share_combobox.get()
+
+
+def choose_file(username, browse_files_combobox, server, chat, student_list, chat_combobox, screen_share_combobox):
+    path = filedialog.askopenfilename(title="Please select the files you want to upload")
+    if path:
+        DataBase.upload_file(path, username, browse_files_combobox, server,chat, student_list, chat_combobox, screen_share_combobox)
+
+
+def update_files_combobox(browse_files_combobox):
+    browse_files_combobox['values'] = DataBase.get_file_names_list()
 
 
 if __name__ == "__main__":

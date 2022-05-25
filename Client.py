@@ -22,23 +22,20 @@ class Client:
                     self.client.send(client_message.encode())
                 else:
                     client_message = "0" + self.client_name + "(Private): " + client_message
-                    Client_GUI.active_chat(chat)
                     Client_GUI.print_message(client_message[1:], chat)
-                    Client_GUI.disable_chat(chat)
                     self.client.send(client_message.encode())
         except:
             self.disconnect(front_page_client, main_page_client)
 
-    def receive(self, chat, front_page_client, main_page_client):
+    def receive(self, chat, front_page_client, main_page_client, browse_files_combobox):
         while True:
             try:
                 server_message = self.client.recv(1024).decode('utf-8')
                 if server_message[0] == '0':
-                    Client_GUI.active_chat(chat)
                     Client_GUI.print_message(server_message[1:], chat)
-                    Client_GUI.disable_chat(chat)
                 elif server_message[0] == '1':
-                    print("file")
+                    Client_GUI.print_file_message("The file " + server_message[1:] + " has been uploaded by your teacher", chat)
+                    Client_GUI.update_files_combobox(browse_files_combobox)
                 elif server_message[0] == '2':
                     self.stream_client = ScreenShareClient(Configuration.server_ip, Configuration.stream_port)
                     self.stream_client.start_stream()
@@ -46,8 +43,8 @@ class Client:
                     server_message = server_message[1:]
                     for i in range(len(server_message)):
                         Registry.apply_permission(i, int(server_message[i]))
-
-            except:
+            except Exception as e:
+                print(e)
                 self.disconnect(front_page_client, main_page_client)
                 break
 
@@ -76,21 +73,7 @@ def client_create(username):
     return client
 
 
-def client_start(client, chat, front_page_client, main_page_client):
-    receiving = threading.Thread(target=client.receive, args=(chat, front_page_client, main_page_client))
+def client_start(client, chat, front_page_client, main_page_client, browse_files_combobox):
+    receiving = threading.Thread(target=client.receive, args=(chat, front_page_client, main_page_client, browse_files_combobox,))
     receiving.start()
-
-
-
-
-
-'''
-if message_type == "file":  # buffer overflow - add try
-    file_name = self.client.recv(1024).decode()
-    buffer = self.client.recv(1024)
-    new_file = open(file_name, "wb")
-    new_file.write(buffer)
-    print("The file: " + file_name + " has been received from your teacher")
-    new_file.close()
-'''
 

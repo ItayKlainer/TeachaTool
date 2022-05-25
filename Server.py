@@ -95,8 +95,7 @@ class Server:
         else:
             Server_GUI.print_message("Permissions have been applied", chat, "green")
 
-
-
+    '''
     def check_connection(self, chat, student_list, chat_combobox, screen_share_combobox):
         while True:
             for i in range(len(self.name_socket_address_list)):
@@ -105,6 +104,7 @@ class Server:
                 except:
                     self.disconnect_client(i, chat, student_list, chat_combobox, screen_share_combobox)
             time.sleep(1)
+    '''
 
     def disconnect_client(self, i, chat, student_list, chat_combobox, screen_share_combobox):
         Server_GUI.print_message(self.name_socket_address_list[i][0] + " has disconnected", chat, "blue")
@@ -114,7 +114,12 @@ class Server:
         Server_GUI.remove_from_list(student_list, i)
         Server_GUI.update_combobox(chat_combobox, screen_share_combobox, self.name_list)
 
-
+    def send_files(self, file_name, chat, student_list, chat_combobox, screen_share_combobox):
+        for i in range(len(self.name_socket_address_list)):
+            try:
+                self.name_socket_address_list[i][1].send(("1" + file_name).encode())
+            except:
+                self.disconnect_client(i, chat, student_list, chat_combobox, screen_share_combobox)
 
 
 def server_create(username):
@@ -127,6 +132,6 @@ def server_create(username):
 def server_start(server, chat, student_list, chat_combobox, screen_share_combobox):
     listening = threading.Thread(target=server.listen, args=(chat, student_list, chat_combobox, screen_share_combobox,))
     listening.start()
-    checking_connection = threading.Thread(target=server.check_connection, args=(chat, student_list, chat_combobox, screen_share_combobox,))
-    checking_connection.start()
+    #checking_connection = threading.Thread(target=server.check_connection, args=(chat, student_list, chat_combobox, screen_share_combobox,))
+    #checking_connection.start()
 

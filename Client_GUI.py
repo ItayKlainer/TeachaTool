@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 import Client
 import DataBase
+from tkinter import ttk
+import Server_GUI
 
 def start_front_page():
     front_page_client = Tk()
@@ -111,7 +113,6 @@ def register(username, password1, password2, register_page_client, front_page_cl
 
 
 def log_in(username, password, front_page_client):
-    can_connect = False
     if DataBase.check_student_log_in(username, password):
        if Client.check_server():
            start_main_page(front_page_client, username)
@@ -142,8 +143,19 @@ def start_main_page(front_page_client, username):
     chat_scrollbar.place(x=1225, y=20, height=575)
     chat_scrollbar.config(command=chat.yview)
 
+    browse_files_lbl = Label(main_page_client, text="Browse files:", font=("Arial", 14, "underline"))
+    browse_files_lbl.place(x=600, y=200)
+
+    browse_files_combobox = ttk.Combobox(main_page_client)
+    browse_files_combobox.place(x=600, y=250)
+
+    download_file_btn = Button(main_page_client, text="Download file", command=lambda:[DataBase.download_file(browse_files_combobox.get(), chat)], font=("Arial", 14,))
+    download_file_btn.place(x=595, y=450, height=50, width=150)
+
+    update_files_combobox(browse_files_combobox)
+
     client = Client.client_create(username)
-    Client.client_start(client, chat, front_page_client, main_page_client)
+    Client.client_start(client, chat, front_page_client, main_page_client, browse_files_combobox)
 
     public_message_icon = PhotoImage(file='Send_message.png')
     send_public_message_btn = Button(main_page_client, image=public_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, True, front_page_client, main_page_client), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
@@ -153,23 +165,23 @@ def start_main_page(front_page_client, username):
     send_private_message_btn = Button(main_page_client, image=private_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, False, front_page_client, main_page_client), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_private_message_btn.place(x=775, y=630, height=25, width=25)
 
-    browse_files_btn = Button(main_page_client, text="Browse\nFiles", font=("Arial", 18,))
-    browse_files_btn.place(x=500, y=250, height=150, width=150)
-
-
-
     mainloop()
 
 
+def update_files_combobox(browse_files_combobox):
+    browse_files_combobox['values'] = DataBase.get_file_names_list()
+
 def print_message(message, chat):
-    chat.insert('end', message + '\n')
-
-def active_chat(chat):
     chat.config(state=NORMAL)
-
-
-def disable_chat(chat):
+    chat.insert('end', message + '\n')
     chat.config(state=DISABLED)
+
+def print_file_message(message, chat):
+    chat.config(state=NORMAL)
+    chat.tag_config('file_message', foreground="blue")
+    chat.insert('end', message + '\n', 'file_message')
+    chat.config(state=DISABLED)
+
 
 
 if __name__ == "__main__":
