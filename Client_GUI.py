@@ -3,7 +3,6 @@ from tkinter import messagebox
 import Client
 import DataBase
 from tkinter import ttk
-import Server_GUI
 
 def start_front_page():
     front_page_client = Tk()
@@ -164,6 +163,9 @@ def start_main_page(front_page_client, username):
     private_message_icon = PhotoImage(file='Send_private_message.png')
     send_private_message_btn = Button(main_page_client, image=private_message_icon, command=lambda: [Client.Client.write(client, message.get(), chat, False, front_page_client, main_page_client), student_message.delete(0, 'end')], font=("Arial", 14, "bold"))
     send_private_message_btn.place(x=775, y=630, height=25, width=25)
+
+    disconnect_btn = Button(main_page_client, text= "Disconnect", command=lambda:[Client.Client.disconnect(client, front_page_client, main_page_client, True)], font=("Arial", 14, "bold"))
+    disconnect_btn.place(x=50, y=20)
 
     mainloop()
 

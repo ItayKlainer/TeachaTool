@@ -213,6 +213,9 @@ def start_main_page(front_page_server, username):
     download_file_btn = Button(main_page_server, text="Download file", command=lambda:[DataBase.download_file(browse_files_combobox.get(), chat)], font=("Arial", 14,))
     download_file_btn.place(x=595, y=450, height=50, width=150)
 
+    delete_file_btn = Button(main_page_server, text="Delete file\nfrom DB", command=lambda:[DataBase.delete_file(browse_files_combobox.get(), server, chat, student_list, chat_combobox, screen_share_combobox, browse_files_combobox)], font=("Arial", 14,))
+    delete_file_btn.place(x=595, y=525, height=50, width=150)
+
     upload_file_btn = Button(main_page_server, text="Upload file", command=lambda:[choose_file(username, browse_files_combobox,server, chat, student_list, chat_combobox, screen_share_combobox)], font=("Arial", 14,))
     upload_file_btn.place(x=1115, y=630)
 

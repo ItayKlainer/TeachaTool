@@ -25,7 +25,7 @@ class Server:
         while True:
             connection, address = self.server.accept()
             name = connection.recv(1024).decode('utf-8')
-            if name.strip():
+            if name.strip() and name not in self.name_list:
                 self.name_socket_address_list.append([name, connection, address])
                 self.name_list.append(name)
                 Server_GUI.print_message(name + " has connected", chat, "blue")
@@ -33,6 +33,7 @@ class Server:
                 Server_GUI.update_combobox(chat_combobox, screen_share_combobox, self.name_list)
                 receiving = threading.Thread(target=self.receive, args=(connection, chat, student_list, chat_combobox, screen_share_combobox,))
                 receiving.start()
+
 
     def write(self, server_message, chat, student_list, chat_combobox, screen_share_combobox):
         if server_message.strip():
@@ -114,10 +115,13 @@ class Server:
         Server_GUI.remove_from_list(student_list, i)
         Server_GUI.update_combobox(chat_combobox, screen_share_combobox, self.name_list)
 
-    def send_files(self, file_name, chat, student_list, chat_combobox, screen_share_combobox):
+    def send_files(self, file_name, chat, student_list, chat_combobox, screen_share_combobox, uploaded_deleted):
         for i in range(len(self.name_socket_address_list)):
             try:
-                self.name_socket_address_list[i][1].send(("1" + file_name).encode())
+                if uploaded_deleted:
+                    self.name_socket_address_list[i][1].send(("11" + file_name).encode())
+                else:
+                    self.name_socket_address_list[i][1].send(("10" + file_name).encode())
             except:
                 self.disconnect_client(i, chat, student_list, chat_combobox, screen_share_combobox)
 

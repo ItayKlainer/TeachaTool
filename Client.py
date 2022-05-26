@@ -25,7 +25,7 @@ class Client:
                     Client_GUI.print_message(client_message[1:], chat)
                     self.client.send(client_message.encode())
         except:
-            self.disconnect(front_page_client, main_page_client)
+            self.disconnect(front_page_client, main_page_client, False)
 
     def receive(self, chat, front_page_client, main_page_client, browse_files_combobox):
         while True:
@@ -34,7 +34,11 @@ class Client:
                 if server_message[0] == '0':
                     Client_GUI.print_message(server_message[1:], chat)
                 elif server_message[0] == '1':
-                    Client_GUI.print_file_message("The file " + server_message[1:] + " has been uploaded by your teacher", chat)
+                    if server_message[1] == '1':
+                        Client_GUI.print_file_message("The file " + server_message[2:] + " has been uploaded by your teacher", chat)
+                    else:
+                        Client_GUI.print_file_message(
+                            "The file " + server_message[2:] + " has been deleted by your teacher", chat)
                     Client_GUI.update_files_combobox(browse_files_combobox)
                 elif server_message[0] == '2':
                     self.stream_client = ScreenShareClient(Configuration.server_ip, Configuration.stream_port)
@@ -45,11 +49,12 @@ class Client:
                         Registry.apply_permission(i, int(server_message[i]))
             except Exception as e:
                 print(e)
-                self.disconnect(front_page_client, main_page_client)
+                self.disconnect(front_page_client, main_page_client, False)
                 break
 
-    def disconnect(self, front_page_client, main_page_client):
-        messagebox.showerror("ERROR", "Teacher has disconnected, sending you to the front page")
+    def disconnect(self, front_page_client, main_page_client, pressed):
+        if not pressed:
+            ("ERROR", "Teacher has disconnected, sending you to the front page")
         main_page_client.withdraw()
         front_page_client.deiconify()
         self.client.close()

@@ -11,7 +11,7 @@ teachatooldb = cluster["TeachaTool"]
 teachers_collection = teachatooldb["Teachers"]
 students_collection = teachatooldb["Students"]
 files_collection = teachatooldb["fs.files"]
-
+chunk_files_collection = teachatooldb["fs.chunks"]
 gridfs_connection_to_db = gridfs.GridFS(teachatooldb)
 
 def add_teacher(username, password):
@@ -72,13 +72,30 @@ def upload_file(path, username, browse_files_combobox, server, chat, student_lis
         file = open(path, "rb")
         file_name = os.path.basename(path)
         file_data = file.read()
-        gridfs_connection_to_db.put(file_data, file_name=file_name, teacher_name=username)
+        file_hash = hashlib.md5(file_data)
+        gridfs_connection_to_db.put(file_data, file_name=file_name, teacher_name=username, file_hash= file_hash.hexdigest())
     except:
         Server_GUI.print_message("Error, file hasn't been uploaded", chat, "red")
     else:
         Server_GUI.update_files_combobox(browse_files_combobox)
         Server_GUI.print_message("The file " + file_name + " has been uploaded", chat, "blue")
-        Server.Server.send_files(server, file_name, chat, student_list, chat_combobox, screen_share_combobox)
+        Server.Server.send_files(server, file_name, chat, student_list, chat_combobox, screen_share_combobox, True)
+
+
+def delete_file(file_name, server, chat, student_list, chat_combobox, screen_share_combobox, browse_files_combobox):
+    if file_name:
+        try:
+            file_document = teachatooldb.fs.files.find_one({"file_name": file_name})
+            file_id = file_document["_id"]
+            gridfs_connection_to_db.delete(file_id)
+        except:
+                Server_GUI.print_message("Error, couldn't delete file", chat, "red")
+        else:
+            Server_GUI.update_files_combobox(browse_files_combobox)
+            Server_GUI.print_message("The file " + file_name + " has been deleted", chat, "blue")
+            Server.Server.send_files(server, file_name, chat, student_list, chat_combobox, screen_share_combobox, False)
+    else:
+        Server_GUI.print_message("Please select a file from the list above", chat, "green")
 
 
 def download_file(file_name, chat):
@@ -93,7 +110,11 @@ def download_file(file_name, chat):
         except:
                 Server_GUI.print_message("Error, couldn't download file", chat, "red")
         else:
-                Server_GUI.print_message("File has been downloaded at " + Configuration.folder_to_download_files, chat, "blue")
+            Server_GUI.print_message("File has been downloaded at " + Configuration.folder_to_download_files, chat, "blue")
+            original_file_hash = file_document["file_hash"]
+            new_file_hash = hashlib.md5(file_data)
+            if original_file_hash != new_file_hash.hexdigest():
+                Server_GUI.print_message("ERROR, the file has been changed, please download it again  " + Configuration.folder_to_download_files, chat, "red")
     else:
         Server_GUI.print_message("Please select a file from the list above", chat, "green")
 
